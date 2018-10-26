@@ -27,9 +27,22 @@ class QuantileLoss(nn.Module):
         self.q = q
 
     def forward(self, x, target):
-        x = self.q* F.relu(x-target) + (1-self.q) * F.relu(target- x)
+        x = self.q * F.relu(x - target) + (1-self.q) * F.relu(target - x)
         x = x.mean() # Mean value of all elements, scalar.
         return x
+    # def __init__(self, quantiles):
+    #     super().__init__()
+    #     self.quantiles = quantiles if isinstance(quantiles, list) else [quantiles]
+    #
+    # def forward(self, preds, target):
+    #     assert not target.requires_grad
+    #     assert preds.size(0) == target.size(0)
+    #     losses = []
+    #     for i, q in enumerate(self.quantiles):
+    #         errors = target - preds
+    #         losses.append(torch.max((q - 1) * errors, q*errors).unsqueeze(1))
+    #     loss = torch.mean(torch.sum(torch.cat(losses, dim=1), dim=1))
+    #     return loss
 # End of Quantile Loss
 # ---------------------------------------------------------------------------------
 

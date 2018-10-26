@@ -22,7 +22,11 @@ from Tools import trainer
 # --------------------------------------------------------------------------------
 
 sign = lambda x: ('+', '')[x < 0]
-
+input_layer = 1
+hidden_layer = 100
+number_layer = 2
+output_layer = 1
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class LinearRegression(nn.Module):
     '''
@@ -34,13 +38,23 @@ class LinearRegression(nn.Module):
     history = [[] for i in range(ridx.logSize)]
     def __init__(self, inSize = 1, loss = nn.MSELoss()): 
         super(LinearRegression, self).__init__() 
-        self.linear = nn.Linear(inSize, 1)  # Specify inputSize at constructor
-        self.loss = loss
+        # self.linear = nn.Linear(inSize, 1)  # Specify inputSize at constructor
+        # self.loss = loss
+        self.hidden_layer = hidden_layer
+        self.num_layer = number_layer
+        self.lstm = nn.LSTM(input_layer, hidden_layer, number_layer, batch_first=True)
+        self.fc = nn.Linear(hidden_layer, output_layer)
   
 
     def forward(self, x): 
-        x = self.linear(x) 
-        return x 
+        # x = self.linear(x)
+        # return x
+        x = x.unsqueeze(dim=-1)
+        h0 = torch.zeros(self.num_layer, x.size(0), self.hidden_layer).to(device)
+        c0 = torch.zeros(self.num_layer, x.size(0), self.hidden_layer).to(device)
+        out, _ = self.lstm(x, (h0, c0))
+        out = self.fc(out[:, -1, :])
+        return out
 
     def get_model_descr(self):
         """Creates a string description of a polynomial."""

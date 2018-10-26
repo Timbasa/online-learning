@@ -4,6 +4,7 @@ import torchvision.datasets as tdata
 import torchvision.transforms as tTrans
 import os
 import torch.nn as nn
+import torch.optim as  optim
 
 
 # WARNING:  This is relevant to the directory that CALLS this toplevel
@@ -65,16 +66,18 @@ print(trainSet.__getitem__(0))
 # model = forward_simple.Net().to(device)
 model = MLR.LinearRegression(25).to(device)
 # model = ann_forward.ANNLFS().to(device)
-print(model.get_model_descr())
+#print(model.get_model_descr())
 # ---|
 
 
 
 
 # Optimizer Declaration and paramater definitions fo here.
-gamma = 0.001
+gamma = 0.01
 momnt = 0.5
-optim = sgd.SGD(model.parameters(), weight_decay = 3, lr=gamma, momentum=momnt)
+# optim = sgd.SGD(model.parameters(), weight_decay = 3, lr=gamma, momentum=momnt)
+print(list(model.parameters()))
+optim = optim.SGD(model.parameters(), weight_decay = 3, lr=gamma, momentum=momnt)
 # ---|
 
 
@@ -97,7 +100,7 @@ model.train(args,device, trainLoader, testLoader,optim, loss)
 
 
 # Report
-print(model.get_model_descr())
+#print(model.get_model_descr())
 print(model.history)
 logFilePath = dir_path + "/Logs/log1.txt"
 model.save_history(logFilePath)
